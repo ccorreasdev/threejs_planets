@@ -174,47 +174,50 @@ let planet3Go = true;
 
 const animate = () => {
     requestAnimationFrame(animate);
-    object1.rotation.y += 0.008;
-    object2.rotation.x += 0.007;
-    object3.rotation.y += 0.005;
 
-    if (planet1Go) {
-        object1.position.y += 0.005;
-    } else {
-        object1.position.y -= 0.005;
+    if (object1 && object2 && object3) {
+
+        object1.rotation.y += 0.008;
+        object2.rotation.x += 0.007;
+        object3.rotation.y += 0.005;
+
+        if (planet1Go) {
+            object1.position.y += 0.005;
+        } else {
+            object1.position.y -= 0.005;
+        }
+
+        if (object1.position.y >= 2) {
+            planet1Go = false;
+        } else if (object1.position.y <= -2) {
+            planet1Go = true;
+        }
+
+        if (planet2Go) {
+            object2.position.y += 0.0025;
+        } else {
+            object2.position.y -= 0.0025;
+        }
+
+        if (object2.position.y >= 2) {
+            planet2Go = false;
+        } else if (object2.position.y <= -2) {
+            planet2Go = true;
+        }
+
+        if (planet3Go) {
+            object3.position.y += 0.0025;
+        } else {
+            object3.position.y -= 0.0025;
+        }
+
+        if (object3.position.y >= 2) {
+            planet3Go = false;
+        } else if (object3.position.y <= -2) {
+            planet3Go = true;
+        }
+
     }
-
-    if (object1.position.y >= 2) {
-        planet1Go = false;
-    } else if (object1.position.y <= -2) {
-        planet1Go = true;
-    }
-
-    if (planet2Go) {
-        object2.position.y += 0.0025;
-    } else {
-        object2.position.y -= 0.0025;
-    }
-
-    if (object2.position.y >= 2) {
-        planet2Go = false;
-    } else if (object2.position.y <= -2) {
-        planet2Go = true;
-    }
-
-    if (planet3Go) {
-        object3.position.y += 0.0025;
-    } else {
-        object3.position.y -= 0.0025;
-    }
-
-    if (object3.position.y >= 2) {
-        planet3Go = false;
-    } else if (object3.position.y <= -2) {
-        planet3Go = true;
-    }
-
-
 
     //controls.update();
     render();
