@@ -6,7 +6,8 @@ const option1 = document.querySelector("#option1");
 const option2 = document.querySelector("#option2");
 const option3 = document.querySelector("#option3");
 
-let object1, object2, object3;
+let mouseOnScreen = false;
+let object1, object2, object3, object4;
 let camera, scene, renderer, controls;
 let mouse = new THREE.Vector2();
 
@@ -27,6 +28,7 @@ const onWindowResize = () => {
 };
 
 const onMouseMove = (e) => {
+    mouseOnScreen = true;
     e.preventDefault();
     mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(e.clientY / window.innerHeight) * 2 + 1
@@ -68,6 +70,7 @@ const init = () => {
         // called when the resource is loaded
         function (gltf) {
 
+            gltf.scene.userData.id = "planet1";
             object1 = gltf.scene;
             gltf.scene.position.x = 0.5;
             gltf.scene.rotation.y = Math.PI / 2;
@@ -116,7 +119,7 @@ const init = () => {
             gltf.cameras; // Array<THREE.Camera>
             gltf.asset; // Object
             scene.add(gltf.scene);
-            gltf.scene.scale(0.5, 0.5, 0.5);
+
 
         },
         // called while loading is progressing
@@ -153,7 +156,46 @@ const init = () => {
             gltf.cameras; // Array<THREE.Camera>
             gltf.asset; // Object
             scene.add(gltf.scene);
-            gltf.scene.scale(0.5, 0.5, 0.5);
+
+        },
+        // called while loading is progressing
+        function (xhr) {
+
+            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+
+        },
+        // called when loading has errors
+        function (error) {
+
+            console.log('An error happened');
+
+        }
+    );
+
+    // Load a glTF resource
+    loader.load(
+        // resource URL
+        './assets/js/models/nebula/scene.gltf',
+        // called when the resource is loaded
+        function (gltf) {
+
+            object4 = gltf.scene;
+            //object3 = gltf.scene;
+            gltf.scene.position.y = 0;
+            gltf.scene.position.x = 0;
+            gltf.scene.position.z = 0;
+
+
+            gltf.animations; // Array<THREE.AnimationClip>
+            gltf.scene; // THREE.Group
+            gltf.scenes; // Array<THREE.Group>
+            gltf.cameras; // Array<THREE.Camera>
+            gltf.asset; // Object
+
+            scene.add(gltf.scene);
+
+
+
         },
         // called while loading is progressing
         function (xhr) {
@@ -181,12 +223,46 @@ const render = () => {
 let planet1Go = true;
 let planet2Go = true;
 let planet3Go = true;
-
+const raycaster = new THREE.Raycaster();
 const animate = () => {
     requestAnimationFrame(animate);
 
-    if (object1 && object2 && object3) {
 
+
+    if (object1 && object2 && object3 && object4) {
+
+
+        if (mouseOnScreen) {
+            raycaster.setFromCamera(mouse, camera);
+            const intersection = raycaster.intersectObjects(scene.children, true);
+
+            if (intersection.length > 0) {
+
+                if (intersection[0].object.name == "Object_6") {
+                    const finalPosition = { x: 0, y: 5, z: 1 };
+                    gsap.to(object1.position, { duration: 1, z: finalPosition.z });
+
+                } else {
+                    const finalPosition = { x: 0, y: 5, z: 0 };
+                    gsap.to(object1.position, { duration: 1, z: finalPosition.z });
+                }
+
+                if (intersection[0].object.name == "clouds_clouds_0") {
+                    const finalPosition = { x: 0, y: 5, z: 1 };
+                    gsap.to(object2.position, { duration: 1, z: finalPosition.z });
+                    gsap.to(object3.position, { duration: 1, z: finalPosition.z });
+
+                } else {
+                    const finalPosition = { x: 0, y: 5, z: 0 };
+                    gsap.to(object2.position, { duration: 1, z: finalPosition.z });
+                    gsap.to(object3.position, { duration: 1, z: finalPosition.z });
+                }
+
+            }
+        }
+
+        object4.rotation.y += 0.00022;
+        object4.rotation.x += 0.00012;
         object1.rotation.y += 0.008;
         object2.rotation.x += 0.007;
         object3.rotation.y += 0.005;
