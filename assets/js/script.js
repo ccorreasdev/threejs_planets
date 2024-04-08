@@ -14,6 +14,16 @@ const onWindowResize = () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+
+    if (window.innerWidth >= 768) {
+        camera.position.set(0, 5, 9);
+    }
+    else if (window.innerWidth >= 500) {
+        camera.position.set(0, 5, 12);
+    } else if (window.innerWidth >= 400) {
+        camera.position.set(0, 5, 15);
+    }
+    console.log(window.innerWidth);
 };
 
 const onMouseMove = (e) => {
