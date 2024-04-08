@@ -2,9 +2,11 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
+const canvas = document.querySelector("#canvas");
 const option1 = document.querySelector("#option1");
 const option2 = document.querySelector("#option2");
 const option3 = document.querySelector("#option3");
+const layout = document.querySelector("#layout");
 
 let mouseOnScreen = false;
 let object1, object2, object3, object4;
@@ -34,6 +36,20 @@ const onMouseMove = (e) => {
     mouse.y = -(e.clientY / window.innerHeight) * 2 + 1
 }
 
+const onScroll = (e) => {
+    var scrollMaxY = Math.max(
+        document.documentElement.scrollHeight, document.body.scrollHeight,
+        document.documentElement.offsetHeight, document.body.offsetHeight,
+        document.documentElement.clientHeight
+    ) - window.innerHeight;
+    const verticalScroll = window.scrollY;
+    console.log(verticalScroll);
+    const normalizedScroll = ((verticalScroll / scrollMaxY) * 7) + 5;
+    const finalPosition = { x: 0, y: normalizedScroll, z: 9 };
+    gsap.to(camera.position, { duration: 1, x: finalPosition.x, y: finalPosition.y, z: finalPosition.z });
+
+};
+
 const init = () => {
 
     camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -47,6 +63,7 @@ const init = () => {
     light.position.set(0, 1, 0);
     scene.add(light);
 
+
     const geometry = new THREE.IcosahedronGeometry(0.5, 3);
     const material = new THREE.MeshPhongMaterial({ color: 0xffffff });
 
@@ -54,7 +71,7 @@ const init = () => {
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    canvas.appendChild(renderer.domElement);
 
     // controls = new OrbitControls(camera, renderer.domElement);
     // controls.enableDamping = true;
@@ -213,6 +230,7 @@ const init = () => {
 
     window.addEventListener("resize", onWindowResize);
     document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("scroll", onScroll);
 };
 
 const render = () => {
