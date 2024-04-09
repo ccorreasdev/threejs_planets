@@ -7,7 +7,7 @@ const option1 = document.querySelector("#option1");
 const option2 = document.querySelector("#option2");
 const option3 = document.querySelector("#option3");
 const layout = document.querySelector("#layout");
-
+let objectSpaceBoard;
 let mouseOnScreen = false;
 let object1, object2, object3, object4;
 let camera, scene, renderer, controls;
@@ -37,17 +37,27 @@ const onMouseMove = (e) => {
 }
 
 const onScroll = (e) => {
-    var scrollMaxY = Math.max(
+    var verticalScrollMax = Math.max(
         document.documentElement.scrollHeight, document.body.scrollHeight,
         document.documentElement.offsetHeight, document.body.offsetHeight,
         document.documentElement.clientHeight
     ) - window.innerHeight;
     const verticalScroll = window.scrollY;
     console.log(verticalScroll);
-    const normalizedScroll = ((verticalScroll / scrollMaxY) * 7) + 5;
-    const finalPosition = { x: 0, y: normalizedScroll, z: 9 };
-    gsap.to(camera.position, { duration: 1, x: finalPosition.x, y: finalPosition.y, z: finalPosition.z });
+    const calculatedPositionObject1 = 5 - (((verticalScroll / verticalScrollMax) * 7));
+    console.log(calculatedPositionObject1);
+    const positionObject1 = { x: 0, y: calculatedPositionObject1, z: 9 };
+    //gsap.to(camera.position, { duration: 1, x: finalPosition.x, y: finalPosition.y, z: finalPosition.z });
+    gsap.to(camera.position, { duration: 1, x: positionObject1.x, y: positionObject1.y, z: positionObject1.z });
 
+
+    const calculatedSpaceBoardX = (((verticalScroll / verticalScrollMax) * 24) - 12);
+    const calculatedSpaceBoardY = (-((verticalScroll / verticalScrollMax) * 42) + 10);
+    console.log("calculatedY: ", calculatedSpaceBoardY);
+
+    const calculatedSpaceBoardRotationY = (((verticalScroll / verticalScrollMax) * 1.5));
+    gsap.to(objectSpaceBoard.position, { duration: 1, x: calculatedSpaceBoardX, y: calculatedSpaceBoardY, z: 15 });
+    gsap.to(objectSpaceBoard.rotation, { duration: 1, x: 0, y: calculatedSpaceBoardRotationY, z: 0 });
 };
 
 const init = () => {
@@ -63,6 +73,10 @@ const init = () => {
     light.position.set(0, 1, 0);
     scene.add(light);
 
+
+    const ambientlight = new THREE.AmbientLight(0xffffff, 1);
+    ambientlight.position.set(0, 10, 0);
+    scene.add(ambientlight);
 
     const geometry = new THREE.IcosahedronGeometry(0.5, 3);
     const material = new THREE.MeshPhongMaterial({ color: 0xffffff });
@@ -80,25 +94,40 @@ const init = () => {
 
     const loader = new GLTFLoader();
 
+
     // Load a glTF resource
     loader.load(
         // resource URL
-        './assets/js/models/planet/scene.gltf',
+        './assets/js/models/space_shuttle/scene.gltf',
         // called when the resource is loaded
         function (gltf) {
 
-            gltf.scene.userData.id = "planet1";
-            object1 = gltf.scene;
-            gltf.scene.position.x = 0.5;
-            gltf.scene.rotation.y = Math.PI / 2;
-
+            objectSpaceBoard = gltf.scene;
+            gltf.scene.position.x = -12;
+            gltf.scene.position.y = 10;
+            gltf.scene.rotation.x = 0;
+            gltf.scene.position.z = 15;
 
             gltf.animations; // Array<THREE.AnimationClip>
             gltf.scene; // THREE.Group
             gltf.scenes; // Array<THREE.Group>
             gltf.cameras; // Array<THREE.Camera>
             gltf.asset; // Object
-            scene.add(gltf.scene);
+            //scene.add(gltf.scene);
+
+            const container = new THREE.Group();
+
+            // Agrega el modelo a este contenedor
+            container.add(gltf.scene);
+
+            // Escala el contenedor
+            container.scale.set(0.2, 0.2, 0.2);
+
+            // Agrega el contenedor a la escena
+            scene.add(container);
+
+
+
         },
         // called while loading is progressing
         function (xhr) {
@@ -114,6 +143,153 @@ const init = () => {
         }
     );
 
+
+
+    // Load a glTF resource
+    loader.load(
+        // resource URL
+        './assets/js/models/planet/scene.gltf',
+        // called when the resource is loaded
+        function (gltf) {
+
+            gltf.scene.userData.id = "planet1";
+            object1 = gltf.scene;
+            gltf.scene.position.x = -1;
+            gltf.scene.rotation.y = Math.PI / 2;
+            gltf.scene.position.y = 1;
+
+            gltf.animations; // Array<THREE.AnimationClip>
+            gltf.scene; // THREE.Group
+            gltf.scenes; // Array<THREE.Group>
+            gltf.cameras; // Array<THREE.Camera>
+            gltf.asset; // Object
+            //scene.add(gltf.scene);
+
+            const container = new THREE.Group();
+
+            // Agrega el modelo a este contenedor
+            container.add(gltf.scene);
+
+            // Escala el contenedor
+            container.scale.set(2, 2, 2);
+
+            // Agrega el contenedor a la escena
+            scene.add(container);
+
+
+
+        },
+        // called while loading is progressing
+        function (xhr) {
+
+            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+
+        },
+        // called when loading has errors
+        function (error) {
+
+            console.log('An error happened');
+
+        }
+    );
+
+
+    // Load a glTF resource
+    loader.load(
+        // resource URL
+        './assets/js/models/aquaplanet.gltf',
+        // called when the resource is loaded
+        function (gltf) {
+
+
+            gltf.scene.position.x = 5;
+            gltf.scene.position.y = 2;
+            gltf.scene.rotation.x = 0.8;
+
+            gltf.animations; // Array<THREE.AnimationClip>
+            gltf.scene; // THREE.Group
+            gltf.scenes; // Array<THREE.Group>
+            gltf.cameras; // Array<THREE.Camera>
+            gltf.asset; // Object
+            //scene.add(gltf.scene);
+
+            const container = new THREE.Group();
+
+            // Agrega el modelo a este contenedor
+            container.add(gltf.scene);
+
+            // Escala el contenedor
+            container.scale.set(0.7, 0.7, 0.7);
+
+            // Agrega el contenedor a la escena
+            scene.add(container);
+
+
+
+        },
+        // called while loading is progressing
+        function (xhr) {
+
+            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+
+        },
+        // called when loading has errors
+        function (error) {
+
+            console.log('An error happened');
+
+        }
+    );
+
+
+    // Load a glTF resource
+    loader.load(
+        // resource URL
+        './assets/js/models/fireplanet.gltf',
+        // called when the resource is loaded
+        function (gltf) {
+
+
+            gltf.scene.position.x = 1;
+            gltf.scene.position.y = -13;
+            gltf.scene.rotation.x = 0.8;
+
+            gltf.animations; // Array<THREE.AnimationClip>
+            gltf.scene; // THREE.Group
+            gltf.scenes; // Array<THREE.Group>
+            gltf.cameras; // Array<THREE.Camera>
+            gltf.asset; // Object
+            //scene.add(gltf.scene);
+
+            const container = new THREE.Group();
+
+            // Agrega el modelo a este contenedor
+            container.add(gltf.scene);
+
+            // Escala el contenedor
+            container.scale.set(0.7, 0.7, 0.7);
+
+            // Agrega el contenedor a la escena
+            scene.add(container);
+
+
+
+        },
+        // called while loading is progressing
+        function (xhr) {
+
+            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+
+        },
+        // called when loading has errors
+        function (error) {
+
+            console.log('An error happened');
+
+        }
+    );
+
+
     // Load a glTF resource
     loader.load(
         // resource URL
@@ -126,16 +302,27 @@ const init = () => {
 
 
             gltf.scene.rotation.y = (Math.PI / 2) / 2;
-            gltf.scene.position.x = 5;
+            gltf.scene.position.x = 3;
             gltf.scene.position.z = 0;
             gltf.scene.rotation.x = (Math.PI / 2) / 1;
+            gltf.scene.position.y = -4;
 
             gltf.animations; // Array<THREE.AnimationClip>
             gltf.scene; // THREE.Group
             gltf.scenes; // Array<THREE.Group>
             gltf.cameras; // Array<THREE.Camera>
             gltf.asset; // Object
-            scene.add(gltf.scene);
+
+            const container = new THREE.Group();
+
+            // Agrega el modelo a este contenedor
+            container.add(gltf.scene);
+
+            // Escala el contenedor
+            container.scale.set(2, 2, 2);
+
+            // Agrega el contenedor a la escena
+            scene.add(container);
 
 
         },
@@ -165,7 +352,7 @@ const init = () => {
             gltf.scene.rotation.y = -(Math.PI / 2) / 2;
             gltf.scene.position.x = -4;
             gltf.scene.position.z = 0;
-
+            gltf.scene.position.y = -10;
 
             gltf.animations; // Array<THREE.AnimationClip>
             gltf.scene; // THREE.Group
@@ -285,41 +472,41 @@ const animate = () => {
         object2.rotation.x += 0.007;
         object3.rotation.y += 0.005;
 
-        if (planet1Go) {
-            object1.position.y += 0.005;
-        } else {
-            object1.position.y -= 0.005;
-        }
+        // if (planet1Go) {
+        //     object1.position.y += 0.005;
+        // } else {
+        //     object1.position.y -= 0.005;
+        // }
 
-        if (object1.position.y >= 2) {
-            planet1Go = false;
-        } else if (object1.position.y <= -2) {
-            planet1Go = true;
-        }
+        // if (object1.position.y >= 2) {
+        //     planet1Go = false;
+        // } else if (object1.position.y <= -2) {
+        //     planet1Go = true;
+        // }
 
-        if (planet2Go) {
-            object2.position.y += 0.0025;
-        } else {
-            object2.position.y -= 0.0025;
-        }
+        // if (planet2Go) {
+        //     object2.position.y += 0.0025;
+        // } else {
+        //     object2.position.y -= 0.0025;
+        // }
 
-        if (object2.position.y >= 2) {
-            planet2Go = false;
-        } else if (object2.position.y <= -2) {
-            planet2Go = true;
-        }
+        // if (object2.position.y >= 2) {
+        //     planet2Go = false;
+        // } else if (object2.position.y <= -2) {
+        //     planet2Go = true;
+        // }
 
-        if (planet3Go) {
-            object3.position.y += 0.0025;
-        } else {
-            object3.position.y -= 0.0025;
-        }
+        // if (planet3Go) {
+        //     object3.position.y += 0.0025;
+        // } else {
+        //     object3.position.y -= 0.0025;
+        // }
 
-        if (object3.position.y >= 2) {
-            planet3Go = false;
-        } else if (object3.position.y <= -2) {
-            planet3Go = true;
-        }
+        // if (object3.position.y >= 2) {
+        //     planet3Go = false;
+        // } else if (object3.position.y <= -2) {
+        //     planet3Go = true;
+        // }
 
     }
 
