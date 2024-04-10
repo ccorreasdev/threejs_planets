@@ -6,10 +6,15 @@ const canvas = document.querySelector("#canvas");
 const option1 = document.querySelector("#option1");
 const option2 = document.querySelector("#option2");
 const option3 = document.querySelector("#option3");
+const progress = document.querySelector("#progress");
 const layout = document.querySelector("#layout");
 let objectSpaceBoard;
 let mouseOnScreen = false;
 let object1, object2, object3, object4;
+let object1Group = new THREE.Group();
+let object2Group = new THREE.Group();
+let object3Group = new THREE.Group();
+let object4Group = new THREE.Group();
 let camera, scene, renderer, controls;
 let mouse = new THREE.Vector2();
 
@@ -60,7 +65,7 @@ const onScroll = (e) => {
     gsap.to(objectSpaceBoard.rotation, { duration: 1, x: 0, y: calculatedSpaceBoardRotationY, z: 0 });
 };
 
-const init = () => {
+const init = async () => {
 
     camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.set(0, 5, 9);
@@ -94,326 +99,446 @@ const init = () => {
 
     const loader = new GLTFLoader();
 
+    const loadModel1 = () => {
+        return new Promise((resolve, reject) => {
 
-    // Load a glTF resource
-    loader.load(
-        // resource URL
-        './assets/js/models/space_shuttle/scene.gltf',
-        // called when the resource is loaded
-        function (gltf) {
 
-            objectSpaceBoard = gltf.scene;
-            gltf.scene.position.x = -12;
-            gltf.scene.position.y = 10;
-            gltf.scene.rotation.x = 0;
-            gltf.scene.position.z = 15;
 
-            gltf.animations; // Array<THREE.AnimationClip>
-            gltf.scene; // THREE.Group
-            gltf.scenes; // Array<THREE.Group>
-            gltf.cameras; // Array<THREE.Camera>
-            gltf.asset; // Object
-            //scene.add(gltf.scene);
+            // Load a glTF resource
+            loader.load(
+                // resource URL
+                './assets/js/models/space_shuttle/scene.gltf',
+                // called when the resource is loaded
+                function (gltf) {
 
-            const container = new THREE.Group();
+                    objectSpaceBoard = gltf.scene;
+                    gltf.scene.position.x = -12;
+                    gltf.scene.position.y = 10;
+                    gltf.scene.rotation.x = 0;
+                    gltf.scene.position.z = 15;
 
-            // Agrega el modelo a este contenedor
-            container.add(gltf.scene);
+                    gltf.animations; // Array<THREE.AnimationClip>
+                    gltf.scene; // THREE.Group
+                    gltf.scenes; // Array<THREE.Group>
+                    gltf.cameras; // Array<THREE.Camera>
+                    gltf.asset; // Object
+                    //scene.add(gltf.scene);
 
-            // Escala el contenedor
-            container.scale.set(0.2, 0.2, 0.2);
+                    const container = new THREE.Group();
 
-            // Agrega el contenedor a la escena
-            scene.add(container);
+                    // Agrega el modelo a este contenedor
+                    container.add(gltf.scene);
 
+                    // Escala el contenedor
+                    container.scale.set(0.2, 0.2, 0.2);
+                    object1Group = container;
+                    // Agrega el contenedor a la escena
 
 
-        },
-        // called while loading is progressing
-        function (xhr) {
+                    resolve(object1Group);
 
-            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+                },
+                // called while loading is progressing
+                function (xhr) {
 
-        },
-        // called when loading has errors
-        function (error) {
+                    console.log((xhr.loaded / xhr.total * 100) + '% loaded');
 
-            console.log('An error happened');
+                },
+                // called when loading has errors
+                function (error) {
 
-        }
-    );
+                    console.log('An error happened');
 
+                }
+            );
 
 
-    // Load a glTF resource
-    loader.load(
-        // resource URL
-        './assets/js/models/planet/scene.gltf',
-        // called when the resource is loaded
-        function (gltf) {
 
-            gltf.scene.userData.id = "planet1";
-            object1 = gltf.scene;
-            gltf.scene.position.x = -1;
-            gltf.scene.rotation.y = Math.PI / 2;
-            gltf.scene.position.y = 1;
 
-            gltf.animations; // Array<THREE.AnimationClip>
-            gltf.scene; // THREE.Group
-            gltf.scenes; // Array<THREE.Group>
-            gltf.cameras; // Array<THREE.Camera>
-            gltf.asset; // Object
-            //scene.add(gltf.scene);
 
-            const container = new THREE.Group();
 
-            // Agrega el modelo a este contenedor
-            container.add(gltf.scene);
 
-            // Escala el contenedor
-            container.scale.set(2, 2, 2);
+        })
+    };
 
-            // Agrega el contenedor a la escena
-            scene.add(container);
+    const loadModel2 = () => {
+        return new Promise((resolve, reject) => {
 
 
 
-        },
-        // called while loading is progressing
-        function (xhr) {
 
-            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+            // Load a glTF resource
+            loader.load(
+                // resource URL
+                './assets/js/models/planet/scene.gltf',
+                // called when the resource is loaded
+                function (gltf) {
 
-        },
-        // called when loading has errors
-        function (error) {
+                    gltf.scene.userData.id = "planet1";
+                    object1 = gltf.scene;
+                    gltf.scene.position.x = -1;
+                    gltf.scene.rotation.y = Math.PI / 2;
+                    gltf.scene.position.y = 1;
 
-            console.log('An error happened');
+                    gltf.animations; // Array<THREE.AnimationClip>
+                    gltf.scene; // THREE.Group
+                    gltf.scenes; // Array<THREE.Group>
+                    gltf.cameras; // Array<THREE.Camera>
+                    gltf.asset; // Object
+                    //scene.add(gltf.scene);
 
-        }
-    );
+                    const container = new THREE.Group();
 
+                    // Agrega el modelo a este contenedor
+                    container.add(gltf.scene);
 
-    // Load a glTF resource
-    loader.load(
-        // resource URL
-        './assets/js/models/aquaplanet.gltf',
-        // called when the resource is loaded
-        function (gltf) {
+                    // Escala el contenedor
+                    container.scale.set(2, 2, 2);
 
+                    // Agrega el contenedor a la escena
 
-            gltf.scene.position.x = 5;
-            gltf.scene.position.y = 2;
-            gltf.scene.rotation.x = 0.8;
 
-            gltf.animations; // Array<THREE.AnimationClip>
-            gltf.scene; // THREE.Group
-            gltf.scenes; // Array<THREE.Group>
-            gltf.cameras; // Array<THREE.Camera>
-            gltf.asset; // Object
-            //scene.add(gltf.scene);
+                    object2Group = container;
+                    resolve(object2Group);
 
-            const container = new THREE.Group();
+                },
+                // called while loading is progressing
+                function (xhr) {
 
-            // Agrega el modelo a este contenedor
-            container.add(gltf.scene);
+                    console.log((xhr.loaded / xhr.total * 100) + '% loaded');
 
-            // Escala el contenedor
-            container.scale.set(0.7, 0.7, 0.7);
+                },
+                // called when loading has errors
+                function (error) {
 
-            // Agrega el contenedor a la escena
-            scene.add(container);
+                    console.log('An error happened');
 
+                }
+            );
 
 
-        },
-        // called while loading is progressing
-        function (xhr) {
+        })
 
-            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
 
-        },
-        // called when loading has errors
-        function (error) {
+    }
 
-            console.log('An error happened');
 
-        }
-    );
+    const loadModel3 = () => {
+        return new Promise((resolve, reject) => {
+            // Load a glTF resource
+            loader.load(
+                // resource URL
+                './assets/js/models/aquaplanet.gltf',
+                // called when the resource is loaded
+                function (gltf) {
 
 
-    // Load a glTF resource
-    loader.load(
-        // resource URL
-        './assets/js/models/fireplanet.gltf',
-        // called when the resource is loaded
-        function (gltf) {
+                    gltf.scene.position.x = 5;
+                    gltf.scene.position.y = 2;
+                    gltf.scene.rotation.x = 0.8;
 
+                    gltf.animations; // Array<THREE.AnimationClip>
+                    gltf.scene; // THREE.Group
+                    gltf.scenes; // Array<THREE.Group>
+                    gltf.cameras; // Array<THREE.Camera>
+                    gltf.asset; // Object
+                    //scene.add(gltf.scene);
 
-            gltf.scene.position.x = 1;
-            gltf.scene.position.y = -13;
-            gltf.scene.rotation.x = 0.8;
+                    const container = new THREE.Group();
 
-            gltf.animations; // Array<THREE.AnimationClip>
-            gltf.scene; // THREE.Group
-            gltf.scenes; // Array<THREE.Group>
-            gltf.cameras; // Array<THREE.Camera>
-            gltf.asset; // Object
-            //scene.add(gltf.scene);
+                    // Agrega el modelo a este contenedor
+                    container.add(gltf.scene);
 
-            const container = new THREE.Group();
+                    // Escala el contenedor
+                    container.scale.set(0.7, 0.7, 0.7);
 
-            // Agrega el modelo a este contenedor
-            container.add(gltf.scene);
+                    // Agrega el contenedor a la escena
 
-            // Escala el contenedor
-            container.scale.set(0.7, 0.7, 0.7);
 
-            // Agrega el contenedor a la escena
-            scene.add(container);
+                    object3Group = container;
+                    resolve(object3Group);
 
+                },
+                // called while loading is progressing
+                function (xhr) {
 
+                    console.log((xhr.loaded / xhr.total * 100) + '% loaded');
 
-        },
-        // called while loading is progressing
-        function (xhr) {
+                },
+                // called when loading has errors
+                function (error) {
 
-            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+                    console.log('An error happened');
 
-        },
-        // called when loading has errors
-        function (error) {
+                }
+            );
 
-            console.log('An error happened');
 
-        }
-    );
+        })
+    };
 
 
-    // Load a glTF resource
-    loader.load(
-        // resource URL
-        './assets/js/models/lava_planet/scene.gltf',
-        // called when the resource is loaded
-        function (gltf) {
 
-            object2 = gltf.scene;
+    const loadModel4 = () => {
+        return new Promise((resolve, reject) => {
+            // Load a glTF resource
+            loader.load(
+                // resource URL
+                './assets/js/models/fireplanet.gltf',
+                // called when the resource is loaded
+                function (gltf) {
 
 
+                    gltf.scene.position.x = 1;
+                    gltf.scene.position.y = -13;
+                    gltf.scene.rotation.x = 0.8;
 
-            gltf.scene.rotation.y = (Math.PI / 2) / 2;
-            gltf.scene.position.x = 3;
-            gltf.scene.position.z = 0;
-            gltf.scene.rotation.x = (Math.PI / 2) / 1;
-            gltf.scene.position.y = -4;
+                    gltf.animations; // Array<THREE.AnimationClip>
+                    gltf.scene; // THREE.Group
+                    gltf.scenes; // Array<THREE.Group>
+                    gltf.cameras; // Array<THREE.Camera>
+                    gltf.asset; // Object
+                    //scene.add(gltf.scene);
 
-            gltf.animations; // Array<THREE.AnimationClip>
-            gltf.scene; // THREE.Group
-            gltf.scenes; // Array<THREE.Group>
-            gltf.cameras; // Array<THREE.Camera>
-            gltf.asset; // Object
+                    const container = new THREE.Group();
 
-            const container = new THREE.Group();
+                    // Agrega el modelo a este contenedor
+                    container.add(gltf.scene);
 
-            // Agrega el modelo a este contenedor
-            container.add(gltf.scene);
+                    // Escala el contenedor
+                    container.scale.set(0.7, 0.7, 0.7);
 
-            // Escala el contenedor
-            container.scale.set(2, 2, 2);
+                    // Agrega el contenedor a la escena
 
-            // Agrega el contenedor a la escena
-            scene.add(container);
 
+                    object4Group = container;
+                    resolve(object4Group);
 
-        },
-        // called while loading is progressing
-        function (xhr) {
+                },
+                // called while loading is progressing
+                function (xhr) {
 
-            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+                    console.log((xhr.loaded / xhr.total * 100) + '% loaded');
 
-        },
-        // called when loading has errors
-        function (error) {
+                },
+                // called when loading has errors
+                function (error) {
 
-            console.log('An error happened');
+                    console.log('An error happened');
 
-        }
-    );
+                }
+            );
 
-    // Load a glTF resource
-    loader.load(
-        // resource URL
-        './assets/js/models/lava_planet/scene.gltf',
-        // called when the resource is loaded
-        function (gltf) {
 
 
-            object3 = gltf.scene;
-            gltf.scene.rotation.y = -(Math.PI / 2) / 2;
-            gltf.scene.position.x = -4;
-            gltf.scene.position.z = 0;
-            gltf.scene.position.y = -10;
+        })
+    };
 
-            gltf.animations; // Array<THREE.AnimationClip>
-            gltf.scene; // THREE.Group
-            gltf.scenes; // Array<THREE.Group>
-            gltf.cameras; // Array<THREE.Camera>
-            gltf.asset; // Object
-            scene.add(gltf.scene);
 
-        },
-        // called while loading is progressing
-        function (xhr) {
+    const loadModel5 = () => {
+        return new Promise((resolve, reject) => {
 
-            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+            // Load a glTF resource
+            loader.load(
+                // resource URL
+                './assets/js/models/lava_planet/scene.gltf',
+                // called when the resource is loaded
+                function (gltf) {
 
-        },
-        // called when loading has errors
-        function (error) {
+                    object2 = gltf.scene;
 
-            console.log('An error happened');
+                    gltf.scene.rotation.y = (Math.PI / 2) / 2;
+                    gltf.scene.position.x = 3;
+                    gltf.scene.position.z = 0;
+                    gltf.scene.rotation.x = (Math.PI / 2) / 1;
+                    gltf.scene.position.y = -4;
 
-        }
-    );
+                    gltf.animations; // Array<THREE.AnimationClip>
+                    gltf.scene; // THREE.Group
+                    gltf.scenes; // Array<THREE.Group>
+                    gltf.cameras; // Array<THREE.Camera>
+                    gltf.asset; // Object
 
-    // Load a glTF resource
-    loader.load(
-        // resource URL
-        './assets/js/models/nebula/scene.gltf',
-        // called when the resource is loaded
-        function (gltf) {
+                    const container = new THREE.Group();
 
-            object4 = gltf.scene;
-            //object3 = gltf.scene;
-            gltf.scene.position.y = 0;
-            gltf.scene.position.x = 0;
-            gltf.scene.position.z = 0;
+                    // Agrega el modelo a este contenedor
+                    container.add(gltf.scene);
 
+                    // Escala el contenedor
+                    container.scale.set(2, 2, 2);
 
-            gltf.animations; // Array<THREE.AnimationClip>
-            gltf.scene; // THREE.Group
-            gltf.scenes; // Array<THREE.Group>
-            gltf.cameras; // Array<THREE.Camera>
-            gltf.asset; // Object
+                    // Agrega el contenedor a la escena
 
-            scene.add(gltf.scene);
+                    resolve(container);
 
+                },
+                // called while loading is progressing
+                function (xhr) {
 
+                    console.log((xhr.loaded / xhr.total * 100) + '% loaded');
 
-        },
-        // called while loading is progressing
-        function (xhr) {
+                },
+                // called when loading has errors
+                function (error) {
 
-            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+                    console.log('An error happened');
 
-        },
-        // called when loading has errors
-        function (error) {
+                }
+            );
 
-            console.log('An error happened');
 
-        }
-    );
+        })
+    }
+
+
+
+    const loadModel6 = () => {
+        return new Promise((resolve, reject) => {
+
+
+            // Load a glTF resource
+            loader.load(
+                // resource URL
+                './assets/js/models/lava_planet/scene.gltf',
+                // called when the resource is loaded
+                function (gltf) {
+
+
+                    object3 = gltf.scene;
+                    gltf.scene.rotation.y = -(Math.PI / 2) / 2;
+                    gltf.scene.position.x = -4;
+                    gltf.scene.position.z = 0;
+                    gltf.scene.position.y = -10;
+
+                    gltf.animations; // Array<THREE.AnimationClip>
+                    gltf.scene; // THREE.Group
+                    gltf.scenes; // Array<THREE.Group>
+                    gltf.cameras; // Array<THREE.Camera>
+                    gltf.asset; // Object
+                    resolve(gltf.scene);
+
+                },
+                // called while loading is progressing
+                function (xhr) {
+
+                    console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+
+                },
+                // called when loading has errors
+                function (error) {
+
+                    console.log('An error happened');
+
+                }
+            );
+
+
+        })
+    }
+
+
+
+
+    const loadModel7 = () => {
+        return new Promise((resolve, reject) => {
+            // Load a glTF resource
+            loader.load(
+                // resource URL
+                './assets/js/models/nebula/scene.gltf',
+                // called when the resource is loaded
+                function (gltf) {
+
+                    object4 = gltf.scene;
+                    //object3 = gltf.scene;
+                    gltf.scene.position.y = 0;
+                    gltf.scene.position.x = 0;
+                    gltf.scene.position.z = 0;
+
+
+                    gltf.animations; // Array<THREE.AnimationClip>
+                    gltf.scene; // THREE.Group
+                    gltf.scenes; // Array<THREE.Group>
+                    gltf.cameras; // Array<THREE.Camera>
+                    gltf.asset; // Object
+
+                    resolve(gltf.scene);
+
+
+                },
+                // called while loading is progressing
+                function (xhr) {
+
+                    console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+
+                },
+                // called when loading has errors
+                function (error) {
+
+                    console.log('An error happened');
+
+                }
+            );
+
+
+        })
+    }
+
+
+
+    let model1, model2, model3, model4, model5, model6, model7;
+
+
+    await loadModel1().then((resolve) => {
+        progress.innerHTML = "PROGRESS: 15%"
+        console.log(resolve);
+        model1 = resolve;
+        return loadModel2();
+    })
+        .then((resolve) => {
+            progress.innerHTML = "PROGRESS: 30%"
+            console.log(resolve);
+            model2 = resolve;
+            return loadModel3();
+        }).then((resolve) => {
+            progress.innerHTML = "PROGRESS: 45%"
+            console.log(resolve);
+            model3 = resolve;
+            return loadModel4();
+        }).then((resolve) => {
+            progress.innerHTML = "PROGRESS: 50%"
+            console.log(resolve);
+            model4 = resolve;
+            return loadModel5();
+        }).then((resolve) => {
+            progress.innerHTML = "PROGRESS: 65%"
+            console.log(resolve);
+            model5 = resolve;
+            return loadModel6();
+        }).then((resolve) => {
+            progress.innerHTML = "PROGRESS: 80%"
+            console.log(resolve);
+            model6 = resolve;
+            return loadModel7();
+        }).then((resolve) => {
+            progress.innerHTML = "PROGRESS: 99%"
+            console.log(resolve);
+            model7 = resolve;
+            progress.innerHTML = "PROGRESS: 100%"
+
+        });
+
+    scene.add(model1);
+    scene.add(model2);
+    scene.add(model3);
+    scene.add(model4);
+    scene.add(model5);
+    scene.add(model6);
+    scene.add(model7);
+
+
+    progress.classList.remove("progress--active");
+
+
 
     window.addEventListener("resize", onWindowResize);
     document.addEventListener("mousemove", onMouseMove);
@@ -446,6 +571,7 @@ const animate = () => {
                 if (intersection[0].object.name == "Object_6") {
                     const finalPosition = { x: 0, y: 5, z: 1 };
                     gsap.to(object1.position, { duration: 1, z: finalPosition.z });
+
 
                 } else {
                     const finalPosition = { x: 0, y: 5, z: 0 };
