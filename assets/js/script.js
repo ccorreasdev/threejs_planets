@@ -8,6 +8,8 @@ const option2 = document.querySelector("#option2");
 const option3 = document.querySelector("#option3");
 const progress = document.querySelector("#progress");
 const layout = document.querySelector("#layout");
+const progressBar = document.querySelector(".progress__bar--progress");
+
 let objectSpaceBoard;
 let mouseOnScreen = false;
 let object1, object2, object3, object4;
@@ -489,42 +491,44 @@ const init = async () => {
 
 
     await loadModel1().then((resolve) => {
-        progress.innerHTML = "PROGRESS: 15%"
+
+        progressBar.style.width = "15%";
         console.log(resolve);
         model1 = resolve;
         return loadModel2();
     })
         .then((resolve) => {
-            progress.innerHTML = "PROGRESS: 30%"
+
+            progressBar.style.width = "30%";
             console.log(resolve);
             model2 = resolve;
             return loadModel3();
         }).then((resolve) => {
-            progress.innerHTML = "PROGRESS: 45%"
+            progressBar.style.width = "45%";
             console.log(resolve);
             model3 = resolve;
             return loadModel4();
         }).then((resolve) => {
-            progress.innerHTML = "PROGRESS: 50%"
+            progressBar.style.width = "60%";
             console.log(resolve);
             model4 = resolve;
             return loadModel5();
         }).then((resolve) => {
-            progress.innerHTML = "PROGRESS: 65%"
+            progressBar.style.width = "75%";
             console.log(resolve);
             model5 = resolve;
             return loadModel6();
         }).then((resolve) => {
-            progress.innerHTML = "PROGRESS: 80%"
+            progressBar.style.width = "90%";
             console.log(resolve);
             model6 = resolve;
             return loadModel7();
         }).then((resolve) => {
-            progress.innerHTML = "PROGRESS: 99%"
+
             console.log(resolve);
             model7 = resolve;
-            progress.innerHTML = "PROGRESS: 100%"
 
+            progressBar.style.width = '100%';
         });
 
     scene.add(model1);
@@ -535,8 +539,10 @@ const init = async () => {
     scene.add(model6);
     scene.add(model7);
 
+    setTimeout(() => {
+        progress.classList.remove("progress--active");
+    }, 500)
 
-    progress.classList.remove("progress--active");
 
 
 
